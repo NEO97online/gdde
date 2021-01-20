@@ -3701,6 +3701,7 @@ DisplayServerX11::WindowID DisplayServerX11::_create_window(WindowMode p_mode, u
 			}
 		}
 
+
 		long im_event_mask = 0;
 
 		{
@@ -3798,6 +3799,14 @@ DisplayServerX11::WindowID DisplayServerX11::_create_window(WindowMode p_mode, u
 			if (wt_atom != None && type_atom != None) {
 				XChangeProperty(x11_display, wd.x11_window, wt_atom, XA_ATOM, 32, PropModeReplace, (unsigned char *)&type_atom, 1);
 			}
+		}
+
+		if (p_flags & WINDOW_FLAG_DOCKED_BIT) {
+			// make window docked
+			Atom property[2];
+			property[1] = XInternAtom(x11_display, "_NET_WM_WINDOW_TYPE", false);
+			property[0] = XInternAtom(x11_display, "_NET_WM_WINDOW_TYPE_DOCK", false);
+			XChangeProperty(x11_display, wd.x11_window, property[1], XA_ATOM, 32, PropModeReplace, (unsigned char *) property, 2L);
 		}
 
 		_update_size_hints(id);
